@@ -9,7 +9,7 @@ class ErrorResponse extends Error{
         super(message)
         this.status=status
     }
-}
+}   
 class ConflictRequestError extends ErrorResponse{
     
     constructor(message=ReasonPhrases.CONFLICT,statusCode=StatusCodes.FORBIDDEN){

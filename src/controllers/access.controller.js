@@ -31,7 +31,6 @@ class AccessController{
                 limit:10
             }
         }).send(res)
-
     }
 }
 module.exports=new AccessController()

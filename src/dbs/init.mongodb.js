@@ -23,7 +23,7 @@ class Database {
         console.log(Database.instance)
         return Database.instance
     }
-}
+}   
 
 const instanceMongoDb=Database.getInstance()
 module.exports=instanceMongoDb

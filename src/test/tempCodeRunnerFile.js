@@ -1,21 +1,17 @@
-const commentModel = require('../models/comment.model')
-const { convertToObjectIdMongodb } = require('../utils')
-function createComment({userId,productId,content,parentId=null}){
-    const comment =new commentModel({
-        comment_productId:convertToObjectIdMongodb(productId),
-        comment_content:content,
-        comment_parentId:parentId,
-        comment_userId:userId
-    })
-    let rightValue
-    const commentParent=commentModel.findById(productId)
-    if(commentParent){
-        rightValue=commentParent.comment_right
-        comment.comment_left=rightValue
-        comment.comment_right=rightValue+1
-        await commentModel.updateMany({
-            
-        })
-        
-    }
-}
+const roles=
+[
+  {
+    role_grants: 
+    [
+      {
+        resource: "65e96aa3db6f09e4bc224c31",
+        actions: [ 'update:any', 'read:any', 'deleted:any' ],
+      },
+      {
+        resource: "65e96ad2db6f09e4bc224c37",
+        actions: [ 'update:any', 'read:any', 'deleted:any' ],
+      }
+    ]
+  }
+]
+console.log( typeof roles)

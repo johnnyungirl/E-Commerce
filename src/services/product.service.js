@@ -5,7 +5,7 @@ const { inserInventory } = require("../models/repositories/inventory.repo")
 require('../core/error.response')
 const {findAllDraftsForShop, publishDrafts, findAllPublishedForShop, unPublishProducts, searchProductByUser, findAllProducts, findProducts, updateProductById}=require('../models/repositories/product.repo')
 const { updateNestedObjectParser, removeUndefinedObject } = require("../utils")
-const { pushNotifyToSystem } = require("./notification.service")
+const NotificationService=require("./notification.service")
 require('../models/repositories/inventory.repo')
 class ProductFactory{
     
@@ -82,15 +82,15 @@ class Product{
         //         stock:this.product_quantity
         //     })
         // }
-        pushNotifyToSystem({
-            type:`SHOP-001`,
-            receiverId:1,
+        await NotificationService.pushNotifyToSystem({
+            type:'SHOP-001',
             senderId:this.product_shop,
+            receiverId:1,
             options:{
                 product_name:this.product_name,
-                shop_name:this.product_shop
+                product_shop:this.product_shop
             }
-        }).then(rs=>{console.log(rs)}).catch(console.error)
+        }).then(resolve=>{console.log(resolve)}).catch(error=>{console.error(error)})
 
         return newProduct
     }

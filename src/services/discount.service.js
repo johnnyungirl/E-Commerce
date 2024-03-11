@@ -21,6 +21,7 @@ class DiscountService{
             discount_shopId:convertToObjectIdMongodb(shopId),
             discount_code:code
         })
+        
         if(foundDiscount && foundDiscount.discount_is_active){
             throw new BadRequestError("Discount already exists")
         }

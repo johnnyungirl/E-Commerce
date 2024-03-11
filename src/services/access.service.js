@@ -1,4 +1,5 @@
 'use strict'
+const JWT=require(`jsonwebtoken`)
 const shopModel=require('../models/shop.model')
 const bcrypt=require('bcrypt')
 const crypto=require('crypto')
@@ -7,6 +8,7 @@ const {createTokenPair, verifyJWT}=require('../auth/authUtils')
 const { getInfoData } = require('../utils')
 const { BadRequestError,ConflictRequestError, AuthFailureError, ForbiddenError, NotFoundError, InternalServerError} = require('../core/error.response')
 const { findByEmail } = require('./shop.service')
+const keytokenModel = require('../models/keytoken.model')
 const RoleShop={
     SHOP:`SHOP`,
     WRITER:`WRITER`,
@@ -101,30 +103,9 @@ class AccessService{
         const match=await bcrypt.compare(password,foundshop.password)
         if(!match) throw new AuthFailureError("Authorization error")
         //3
-        const {publicKey,privateKey}=await crypto.generateKeyPairSync(
-            'rsa',{
-                modulusLength:4096,
-                publicKeyEncoding:{
-                    type:'pkcs1',
-                    format:'pem'
-                },
-                privateKeyEncoding:{    
-                    type:'pkcs1',
-                    format:'pem'
-                }
-            }
-        )
-        //4;
-        const {_id:userId}=foundshop
-        const tokens= await createTokenPair({userId,email},publicKey,privateKey)
-        //5
-        await KeytokenService.createtoken({
-            refreshToken:tokens.refreshToken,
-            publicKey,privateKey,userId
-        })
+        
         return {
             shop: getInfoData({fields:['_id','name','email'],object:foundshop}),
-            tokens
         }
     }
     //signUp
@@ -144,7 +125,6 @@ class AccessService{
             //create if shop not exists yet
             //hash password before add to DB
             const passwordHash=await bcrypt.hash(password,10)
-            console.log(`:::::::::::${passwordHash}`)
             const newShop=await shopModel.create({
                 name,email,password:passwordHash,roles:[RoleShop.SHOP]
             })
@@ -162,27 +142,19 @@ class AccessService{
                         format:'pem'
                     },
                 })
-                const publicKeyString= await KeytokenService.createtoken({userId:newShop._id,publicKey})
-                if(!publicKeyString){
-                    throw new InternalServerError("Create Public Key String Fail")
-                }
-                    const publicKeyObject=crypto.createPublicKey(publicKeyString)
-                    //create token pair
-                    const tokens=await createTokenPair({userId:newShop._id,email},publicKeyObject,privateKey)
-                    return{
-                        code:201,
-                        metadata:{
-                            shop:getInfoData({fields:['_id','name','email'],object:newShop}),
-                        }
-                    }
-                }
+                const publicKeyObject=crypto.createPublicKey(publicKey)
+                //create token pair
+                const tokens=await createTokenPair({userId:newShop._id,email},publicKeyObject,privateKey)
+                
+                await KeytokenService.createtoken({userId:newShop._id,publicKey:publicKey,privateKey:privateKey,refreshToken:tokens.refreshToken})
                 return{
-                        code:200,
-                        metadata:tokens
+                    shop:getInfoData({fields:['_id','name','email'],object:newShop}),
+                    tokens
                 }
             }
-    
         }
+    
+}
 
 
 module.exports=AccessService

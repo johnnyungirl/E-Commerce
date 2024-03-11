@@ -14,7 +14,7 @@ class CartController{
         new SuccessResponse({
             message:'Create new Cart success',
             metadata: await CartService.addToCartV2(req.body)
-        }).send(res)
+        }).send(res)    
     }
     deleteItem=async (req,res,next)=>{
         new SuccessResponse({

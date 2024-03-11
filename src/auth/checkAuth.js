@@ -10,15 +10,16 @@ const apiKey=async(req,res,next)=>{
     try{
         const key= req.headers[HEADER.API_KEY]?.toString()
         if(!key){
+
             return res.status(403).json({
-                message:'Forbiden Error'
-            })``
+                message:'Forbiden Error: input API keys '
+            })
         }
         //check objkey
         const objKey=await findbyID(key)
         if(!objKey){
             return res.status(403).json({
-                message:'Forbiden Error'
+                message:'Forbiden Error: API keys no found'
             })
         }
         req.objKey=objKey

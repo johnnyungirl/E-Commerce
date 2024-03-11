@@ -1,16 +1,20 @@
-const { default: mongoose } = require("mongoose")
+// noti_type
+// noti_senderId
+// noti_receiverId
+// noti_content
+// noti_options
+const mongoose=require(`mongoose`)
+const DOCUMENT='Notification'
+const COLLECTION='Notifications'
 
-require(`mongoose`)
-const COLLECTION_NAME="Notifications"
-const DOCUMENT_NAME="Notification"
-const notificationSchema=new mongoose.Schema({
-    noti_type:{type:String ,enum:[`ORDER-001`,`ORDER-002`,`PROMOTION-001`,`SHOP-001`],required:true},
-    noti_senderId:{type:mongoose.Types.ObjectId,required:true},
-    noti_receiverId:{type:String,required:true},
-    noti_content:{type:String,required:true},
+const NotificationSchema=new mongoose.Schema({
+    noti_type:{type:String,enum:[`ORDER-001`,`ORDER-002`,`PROMOTION-001`,`SHOP-001`],require:true},
+    noti_senderId:{type:mongoose.Schema.Types.ObjectId,require:true},
+    noti_receiverId:{type:Number,require:true},
+    noti_content:{type:String,require:true},
     noti_options:{type:Object,default:{}}
 },{
-    timestamps:true,
-    collection:COLLECTION_NAME
+    collection:COLLECTION,
+    timestamps:true
 })
-module.exports=mongoose.model(DOCUMENT_NAME,notificationSchema)
+module.exports=mongoose.model(DOCUMENT,NotificationSchema)
